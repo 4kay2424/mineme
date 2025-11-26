@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Coin Web Miner</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">⛏️ Multi-Coin Web Miner</h1>
+                <p class="subtitle">Mine multiple cryptocurrencies directly in your browser</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="grid-layout">
+                <!-- Left Panel: Controls -->
+                <section class="control-panel">
+                    <div class="panel-header">
+                        <h2>⚙️ Miner Controls</h2>
+                    </div>
+
+                    <!-- Coin Selection -->
+                    <div class="form-group">
+                        <label for="coin-select">Select Coin:</label>
+                        <select id="coin-select" class="form-input">
+                            <option value="duco">DuinoCoin (DUCO)</option>
+                            <option value="coinimp">CoinIMP</option>
+                            <option value="webminepool">WebMinePool</option>
+                            <option value="cryptonight">CryptoNight</option>
+                            <option value="mintme">MintMe (CryptoNight)</option>
+                            <option value="sha256">SHA-256</option>
+                        </select>
+                    </div>
+
+                    <!-- Wallet/Username Input -->
+                    <div class="form-group">
+                        <label for="wallet-input">Wallet / Username:</label>
+                        <input
+                            type="text"
+                            id="wallet-input"
+                            class="form-input"
+                            placeholder="Enter your wallet address or username"
+                        >
+                    </div>
+
+                    <!-- Pool URL (for CryptoNight/MintMe) -->
+                    <div class="form-group" id="pool-url-group" style="display: none;">
+                        <label for="pool-url">Pool URL:</label>
+                        <input
+                            type="text"
+                            id="pool-url"
+                            class="form-input"
+                            placeholder="e.g., pool.mintme.com:3333"
+                        >
+                    </div>
+
+                    <!-- Algorithm Selection (for CryptoNight/MintMe) -->
+                    <div class="form-group" id="algorithm-group" style="display: none;">
+                        <label for="algorithm-select">Algorithm:</label>
+                        <select id="algorithm-select" class="form-input">
+                            <option value="cn-fast">CryptoNight Fast</option>
+                            <option value="cn-half">CryptoNight Half</option>
+                            <option value="cn-turtle">CryptoNight Turtle</option>
+                            <option value="cn-upx2">CryptoNight UPX2</option>
+                            <option value="randomx">RandomX</option>
+                        </select>
+                    </div>
+
+                    <!-- Throttle Slider -->
+                    <div class="form-group">
+                        <label for="throttle-slider">CPU Throttle: <span id="throttle-value">0</span>%</label>
+                        <input
+                            type="range"
+                            id="throttle-slider"
+                            class="slider"
+                            min="0"
+                            max="100"
+                            value="0"
+                        >
+                        <small>Higher = less CPU usage</small>
+                    </div>
+
+                    <!-- Consent Checkbox -->
+                    <div class="form-group checkbox-group">
+                        <input
+                            type="checkbox"
+                            id="consent-checkbox"
+                            class="checkbox"
+                        >
+                        <label for="consent-checkbox" class="checkbox-label">
+                            I understand that mining will use my CPU resources and I consent to this activity
+                        </label>
+                    </div>
+
+                    <!-- Start/Stop Buttons -->
+                    <div class="button-group">
+                        <button id="start-btn" class="btn btn-start" disabled>
+                            ▶️ Start Mining
+                        </button>
+                        <button id="stop-btn" class="btn btn-stop" disabled>
+                            ⏹️ Stop Mining
+                        </button>
+                    </div>
+
+                    <!-- Status Indicator -->
+                    <div class="status-indicator">
+                        <div class="status-dot" id="status-dot"></div>
+                        <span id="status-text">Idle</span>
+                    </div>
+                </section>
+
+                <!-- Right Panel: Statistics -->
+                <section class="stats-panel">
+                    <div class="panel-header">
+                        <h2>📊 Statistics</h2>
+                    </div>
+
+                    <!-- Hashrate -->
+                    <div class="stat-card">
+                        <div class="stat-label">Hashrate</div>
+                        <div class="stat-value" id="hashrate">0 H/s</div>
+                        <div class="stat-subtext">Current mining speed</div>
+                    </div>
+
+                    <!-- Accepted Shares -->
+                    <div class="stat-card">
+                        <div class="stat-label">Accepted Shares</div>
+                        <div class="stat-value" id="accepted-shares">0</div>
+                        <div class="stat-subtext">Valid work submissions</div>
+                    </div>
+
+                    <!-- Rejected Shares -->
+                    <div class="stat-card">
+                        <div class="stat-label">Rejected Shares</div>
+                        <div class="stat-value" id="rejected-shares">0</div>
+                        <div class="stat-subtext">Invalid submissions</div>
+                    </div>
+
+                    <!-- Mining Time -->
+                    <div class="stat-card">
+                        <div class="stat-label">Mining Time</div>
+                        <div class="stat-value" id="mining-time">00:00:00</div>
+                        <div class="stat-subtext">Session duration</div>
+                    </div>
+
+                    <!-- Current Coin -->
+                    <div class="stat-card">
+                        <div class="stat-label">Current Coin</div>
+                        <div class="stat-value" id="current-coin">None</div>
+                        <div class="stat-subtext">Active mining target</div>
+                    </div>
+
+                    <!-- Worker Threads -->
+                    <div class="stat-card">
+                        <div class="stat-label">Worker Threads</div>
+                        <div class="stat-value" id="worker-threads">0</div>
+                        <div class="stat-subtext">Active workers</div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Console Log Panel -->
+            <section class="console-panel">
+                <div class="panel-header">
+                    <h2>📝 Console Log</h2>
+                    <button id="clear-log-btn" class="btn btn-small">Clear</button>
+                </div>
+                <div class="console-output" id="console-output">
+                    <div class="log-entry log-info">System ready. Configure miner and click Start.</div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 Multi-Coin Web Miner | Browser-based cryptocurrency mining</p>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+                      </html>
